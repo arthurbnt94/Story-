@@ -5,21 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="robots" content="noindex, nofollow" />
     <meta name="theme-color" content="#000000" />
-    <title>Exemple de story · Arthur Benattou</title>
+    <title>Exemples de stories · Arthur Benattou</title>
     <style>
       html,
       body {
         margin: 0;
-        height: 100%;
+        min-height: 100%;
         background: #000;
       }
       body {
+        font-family: -apple-system, system-ui, "Helvetica Neue", Arial, sans-serif;
+        color: #fff;
+        -webkit-font-smoothing: antialiased;
+      }
+      button {
+        font: inherit;
+        color: inherit;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      /* Écran de choix */
+      .choix {
+        box-sizing: border-box;
+        min-height: 100vh;
+        min-height: 100dvh;
+        max-width: 520px;
+        margin: 0 auto;
+        padding: max(28px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 22px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      .sous {
+        margin: 4px 0 0;
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.65);
+      }
+      .videos {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .carte {
+        display: block;
+        width: 100%;
+        padding: 0;
+        border: 0;
+        background: none;
+        text-align: left;
+      }
+      .vignette {
+        display: block;
+        position: relative;
+        aspect-ratio: 738 / 1600;
+        border-radius: 14px;
+        overflow: hidden;
+        background: #1a1a1a;
+        transition: transform 0.15s ease;
+      }
+      .carte:active .vignette {
+        transform: scale(0.97);
+      }
+      .vignette img {
+        position: absolute;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .rond {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 58px;
+        height: 58px;
+        margin: -29px 0 0 -29px;
+        border-radius: 50%;
+        background: #ffd600;
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: hidden;
-        font-family: -apple-system, system-ui, "Helvetica Neue", Arial, sans-serif;
-        color: #fff;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+      }
+      .rond svg {
+        width: 24px;
+        height: 24px;
+        margin-left: 4px;
+      }
+      .titre {
+        display: block;
+        margin-top: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.25;
+      }
+      .duree {
+        display: block;
+        margin-top: 2px;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+      .astuce {
+        margin: 0;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.6);
+        text-align: center;
+      }
+
+      /* Lecture en plein écran */
+      .lecteur {
+        position: fixed;
+        inset: 0;
+        background: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .lecteur[hidden],
+      .fin[hidden] {
+        display: none;
       }
       .cadre {
         position: relative;
@@ -35,74 +148,135 @@
         object-fit: contain;
         background: #000;
       }
-      .lancer {
+      .retour {
+        position: absolute;
+        top: max(12px, env(safe-area-inset-top));
+        left: 12px;
+        width: 42px;
+        height: 42px;
+        border: 0;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .retour svg {
+        width: 22px;
+        height: 22px;
+      }
+      .fin {
         position: absolute;
         inset: 0;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 14px;
-        width: 100%;
+        gap: 12px;
+        background: rgba(0, 0, 0, 0.62);
+      }
+      .bouton {
+        min-width: 230px;
+        padding: 14px 22px;
         border: 0;
-        background: rgba(0, 0, 0, 0.5);
-        color: #fff;
-        font: inherit;
-        cursor: pointer;
-        -webkit-tap-highlight-color: transparent;
-      }
-      .lancer.cache {
-        display: none;
-      }
-      .rond {
-        width: 84px;
-        height: 84px;
-        border-radius: 50%;
-        background: #ffd600;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .rond svg {
-        width: 34px;
-        height: 34px;
-        margin-left: 5px;
-      }
-      .lancer span {
-        font-size: 17px;
+        border-radius: 999px;
+        font-size: 16px;
         font-weight: 600;
       }
-      .lancer small {
-        font-size: 13px;
-        opacity: 0.75;
+      .principal {
+        background: #ffd600;
+        color: #0d0d0b;
+      }
+      .second {
+        background: rgba(255, 255, 255, 0.16);
       }
     </style>
   </head>
   <body>
-    <div class="cadre">
-      <video id="video" src="story.mp4" poster="apercu.jpg" playsinline preload="auto"></video>
-      <button class="lancer" id="lancer">
-        <div class="rond">
-          <svg viewBox="0 0 24 24" fill="#0d0d0b"><path d="M6 3.5l14 8.5-14 8.5z" /></svg>
+    <main class="choix" id="choix">
+      <div>
+        <h1>Exemples de stories</h1>
+        <p class="sous">Réalisées par Arthur Benattou</p>
+      </div>
+      <div class="videos">
+        <button class="carte" data-video="inventaire">
+          <span class="vignette">
+            <img src="apercu-inventaire.jpg" alt="" />
+            <span class="rond"><svg viewBox="0 0 24 24" fill="#0d0d0b"><path d="M6 3.5l14 8.5-14 8.5z" /></svg></span>
+          </span>
+          <span class="titre">Remplis ton inventaire</span>
+          <span class="duree">32 s</span>
+        </button>
+        <button class="carte" data-video="vitrine">
+          <span class="vignette">
+            <img src="apercu-vitrine.jpg" alt="" />
+            <span class="rond"><svg viewBox="0 0 24 24" fill="#0d0d0b"><path d="M6 3.5l14 8.5-14 8.5z" /></svg></span>
+          </span>
+          <span class="titre">La vitrine de ton club</span>
+          <span class="duree">22 s</span>
+        </button>
+      </div>
+      <p class="astuce">Touchez une vidéo pour la lancer avec le son</p>
+    </main>
+
+    <div class="lecteur" id="lecteur" hidden>
+      <div class="cadre">
+        <video id="video" playsinline preload="metadata"></video>
+        <div class="fin" id="fin" hidden>
+          <button class="bouton principal" id="autre">Voir l'autre exemple</button>
+          <button class="bouton second" id="revoir">Revoir</button>
+          <button class="bouton second" id="tous">Tous les exemples</button>
         </div>
-        <span>Lancer la vidéo avec le son</span>
-        <small>Exemple de story réalisé par Arthur Benattou</small>
+      </div>
+      <button class="retour" id="retour" aria-label="Retour aux exemples">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
       </button>
     </div>
+
     <script>
+      const VIDEOS = {
+        inventaire: { src: "video-inventaire.mp4", apercu: "apercu-inventaire.jpg" },
+        vitrine: { src: "video-vitrine.mp4", apercu: "apercu-vitrine.jpg" },
+      };
+      const AUTRE = { inventaire: "vitrine", vitrine: "inventaire" };
       const video = document.getElementById("video");
-      const lancer = document.getElementById("lancer");
-      lancer.addEventListener("click", () => {
-        lancer.classList.add("cache");
+      const lecteur = document.getElementById("lecteur");
+      const fin = document.getElementById("fin");
+      let actuelle = null;
+
+      function lancer(nom) {
+        actuelle = nom;
+        fin.hidden = true;
+        if (video.getAttribute("src") !== VIDEOS[nom].src) {
+          video.poster = VIDEOS[nom].apercu;
+          video.src = VIDEOS[nom].src;
+        } else {
+          video.currentTime = 0;
+        }
         video.muted = false;
-        video.currentTime = 0;
+        lecteur.hidden = false;
         video.play();
-      });
+      }
+      function fermer() {
+        video.pause();
+        lecteur.hidden = true;
+      }
+
+      // le bouton retour du téléphone ramène aux exemples au lieu de quitter la page
+      document.querySelectorAll(".carte").forEach((carte) =>
+        carte.addEventListener("click", () => {
+          history.pushState({ lecteur: true }, "");
+          lancer(carte.dataset.video);
+        })
+      );
+      window.addEventListener("popstate", fermer);
+      const revenir = () => (history.state && history.state.lecteur ? history.back() : fermer());
+      document.getElementById("retour").addEventListener("click", revenir);
+      document.getElementById("tous").addEventListener("click", revenir);
+      document.getElementById("revoir").addEventListener("click", () => lancer(actuelle));
+      document.getElementById("autre").addEventListener("click", () => lancer(AUTRE[actuelle]));
       video.addEventListener("click", () => (video.paused ? video.play() : video.pause()));
-      video.addEventListener("ended", () => {
-        lancer.querySelector("span").textContent = "Revoir la vidéo";
-        lancer.classList.remove("cache");
-      });
+      video.addEventListener("ended", () => (fin.hidden = false));
     </script>
   </body>
 </html>
